@@ -1,0 +1,17 @@
+name: Hello World
+
+on: 
+  workflow_dispatch:
+
+jobs: 
+  say-hello-inline-bash:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First Message
+        run : echo ""Hello from an inline bash script in a GitHub Action Workflow!""
+  say-hello-inline-bash1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Second Message
+        run: echo "Hello Sukanya!"
+    
