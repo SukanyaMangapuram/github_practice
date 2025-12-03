@@ -14,6 +14,11 @@ jobs:
     steps:
       - name: Second Message
         run: echo "Hello Sukanya!"
+  say-hello-inline-bash2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Second Message
+        run: echo "Hello Sukanya Mangapuram!"
         
      
     
