@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Using Actions
-        uses: 
+        uses: "https://github.com/SukanyaMangapuram/github_practice"
         with:
           who-to-greet: 
     
