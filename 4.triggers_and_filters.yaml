@@ -1,0 +1,32 @@
+name: Triggering Events
+
+on:
+  push:
+    branch:
+      - "example-branch/*"
+
+  pull request:
+    types:
+      - opened
+      - synchronised
+      - reopened
+    paths: 
+      - "03-core-features/filters/*.md"
+      - "!03-core-features/filters/*.txt"
+
+  schedule:
+    cron: "0 0 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  echo_event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump full event JSON
+        run: |
+          echo "$GIT_EVENT_NAME payload"
+          cat "$GIT_EVENT_PATH"
+
+
+    
