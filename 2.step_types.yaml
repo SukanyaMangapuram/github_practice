@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Using Shell
         run: echo "Hello from an inline bash script in a GitHub Action Workflow!"
+        shell: Pyhton
   say-hello-inline-python:
     runs-on: ubuntu-latest
     steps:
