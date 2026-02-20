@@ -3,6 +3,8 @@ name: ouputs test
 on:  
   workflow_dispatch:
 
+  push: [ master ]
+
 jobs:
   test:
      name: step-output
