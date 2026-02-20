@@ -1,0 +1,21 @@
+name: ouputs test
+
+on:  
+  workflow_dispatch:
+
+jobs:
+  test:
+     name: step-output
+     runs-on: ubuntu-latest
+
+     steps:
+       - name: declaring and assigning variable
+         id: pass_value
+         run: echo "number = 3" >> '$GITHUB_OUTPUT"
+
+       - name: accessing variable
+         run: echo '${{ steps.pass_value.ouputs.number" }}
+         
+
+       
+     
