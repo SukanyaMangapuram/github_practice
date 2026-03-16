@@ -14,7 +14,7 @@ jobs:
      steps:
        - name: declaring and assigning variable
          id: pass_value
-         run: echo "number=3" >> '$GITHUB_OUTPUT"
+         run: echo "number=3" >> "$GITHUB_OUTPUT"
 
        - name: accessing variable
          run: echo '${{ steps.pass_value.outputs.number }}"
