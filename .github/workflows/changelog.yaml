@@ -123,7 +123,7 @@ jobs:
           """
 
           with open("release_head.html", "w", encoding="utf-8") as f:
-          f.write(head_section)
+              f.write(head_section)
           PY
           
           # Insert Release HEAD section before previous release section
