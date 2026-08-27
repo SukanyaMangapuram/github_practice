@@ -32,7 +32,7 @@ jobs:
           APP_VERSION="dummy1"
           TRANSLATIONS="dummy2"
           CHANGELOG_FILE="CHANGELOG.md"
-          
+
           EXISTING_APP_VERSION=$(grep -oP '(?<=<li>App Version - ).*(?=</li>)' "$HTML_FILE")
           echo "EXISTING_APP_VERSION=$EXISTING_APP_VERSION" >> $GITHUB_ENV
           echo "Existing App Version: $EXISTING_APP_VERSION"
@@ -90,18 +90,18 @@ jobs:
             desc = match.group(3)
 
             row = f'''
-          <tr>
-          <td><a href="https://devstackcom/jira/browse/{jira}{jira}</a></td>
-          <td>{desc}</td>
-          </tr>
-          '''
+            <tr>
+            <td><a href="https://devstackcom/jira/browse/{jira}{jira}</a></td>
+            <td>{desc}</td>
+            </tr>
+            '''
 
-          if change_type == "feat":
-             features.append(row)
-          elif change_type == "story":
-             stories.append(row)
-          else:
-             bugs.append(row)
+            if change_type == "feat":
+              features.append(row)
+            elif change_type == "story":
+              stories.append(row)
+            else:
+              bugs.append(row)
 
           head_section = f"""
           <h2 id="_HEAD">Release HEAD</h2>
@@ -125,10 +125,10 @@ jobs:
           with open("release_head.html", "w", encoding="utf-8") as f:
               f.write(head_section)
           PY
-          
+
           # Insert Release HEAD section before previous release section
           #sed -i "/<h2 id=\"_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION<\/h2>/r release_head.html" "$HTML_FILE"
- 
+
       - name: Upload Changelog Artifact
         uses: actions/upload-artifact@v4
         with:
