@@ -37,12 +37,9 @@ jobs:
          
          # Rename current HEAD section to existing app version
          sed -i "s|<h2 id=\"_HEAD\">Release HEAD</h2>|<h2 id=\"_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION</h2>|" "$HTML_FILE"
-         
-         # Rename current TOC entry to existing app version
-         sed -i "s|<li><a href=\"#_HEAD\">Release HEAD</a></li>|<li><a href=\"#_$EXISTING_APP_VERSIONNG_APP_VERSION</a></li>|" "$HTML_FILE"
-         
-         # Insert new HEAD entry above the version entry
-         sed -i "/<li><a href=\"#_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION<\/i <li>\"#_HEAD\"Release HEAD</a></li>" "$HTML_FILE"
+
+         # Adding Version pointer in TOC
+         sed -i "/<li><a href=\"#_HEAD\">Release HEAD<\/a><\/li>/a\\<li><a href=\"#_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION</a></li>" "$HTML_FILE"
          
          # Update latest app version
          sed -i "s|<li>App Version - .*</li>|<li>App Version - $APP_VERSION</li>|" "$HTML_FILE"
