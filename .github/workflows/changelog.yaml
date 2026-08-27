@@ -127,7 +127,7 @@ jobs:
           PY
 
           # Insert Release HEAD section before previous release section
-          #sed -i "/<h2 id=\"_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION<\/h2>/r release_head.html" "$HTML_FILE"
+          sed -i "/<h2 id=\"_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION<\/h2>/r release_head.html" "$HTML_FILE"
 
       - name: Upload Changelog Artifact
         uses: actions/upload-artifact@v4
