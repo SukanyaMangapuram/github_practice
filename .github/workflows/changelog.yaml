@@ -1,0 +1,43 @@
+name: Update Changelog
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-changelog:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set HTML File Path
+        run: |
+          HTML_FILE="changelog.html"
+          echo "HTML_FILE=$HTML_FILE" >> $GITHUB_ENV
+
+      - name: Verify HTML File Exists
+        run: |
+          if [ ! -f "$HTML_FILE" ]; then
+            echo "HTML file not found: $HTML_FILE"
+            exit 1
+          fi
+
+          echo "HTML file found:"
+          ls -l "$HTML_FILE"
+
+      - name: Update Changelog
+        run: |
+          APP_VERSION="dummy1"
+          TRANSLATIONS="dummy2"
+
+          EXISTING_APP_VERSION=$(grep -oP '(?<=<li>App Version - ).*(?=</li>)' "$HTML_FILE")
+          echo "EXISTING_APP_VERSION=$EXISTING_APP_VERSION" >> $GITHUB_ENV
+          echo "Existing App Version: $EXISTING_APP_VERSION"
+
+          # Update App Version
+          sed -i "s|<li>App Version - .*</li>|<li>App Version - $APP_VERSION</li>|" "$HTML_FILE"
+
+          # Update Translations
+          sed -i "s|<li>Translations: .*</li>|<li>Translations: $TRANSLATIONS
