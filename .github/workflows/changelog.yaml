@@ -31,7 +31,8 @@ jobs:
         run: |
           APP_VERSION="dummy1"
           TRANSLATIONS="dummy2"
-
+          CHANGELOG_FILE="CHANGELOG.md"
+          
           EXISTING_APP_VERSION=$(grep -oP '(?<=<li>App Version - ).*(?=</li>)' "$HTML_FILE")
           echo "EXISTING_APP_VERSION=$EXISTING_APP_VERSION" >> $GITHUB_ENV
           echo "Existing App Version: $EXISTING_APP_VERSION"
