@@ -27,17 +27,31 @@ jobs:
           echo "HTML file found:"
           ls -l "$HTML_FILE"
 
-      - name: Update Changelog
+      - name: Update App Version
         run: |
-          APP_VERSION="dummy1"
-          TRANSLATIONS="dummy2"
-
-          EXISTING_APP_VERSION=$(grep -oP '(?<=<li>App Version - ).*(?=</li>)' "$HTML_FILE")
-          echo "EXISTING_APP_VERSION=$EXISTING_APP_VERSION" >> $GITHUB_ENV
-          echo "Existing App Version: $EXISTING_APP_VERSION"
-
-          # Update App Version
-          sed -i "s|<li>App Version - .*</li>|<li>App Version - $APP_VERSION</li>|" "$HTML_FILE"
-
-          # Update Translations
-          sed -i "s|<li>Translations: .*</li>|<li>Translations: $TRANSLATIONS
+         APP_VERSION="dummy1"
+         TRANSLATIONS="dummy2"
+         EXISTING_APP_VERSION=$(grep -oP '(?<=<li>App Version - ).*(?=</li>)' "$HTML_FILE")
+         echo "EXISTING_APP_VERSION=$EXISTING_APP_VERSION" >> $GITHUB_ENV
+         echo "Existing App Version: $EXISTING_APP_VERSION"
+         
+         # Rename current HEAD section to existing app version
+         sed -i "s|<h2 id=\"_HEAD\">Release HEAD</h2>|<h2 id=\"_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION</h2>|" "$HTML_FILE"
+         
+         # Rename current TOC entry to existing app version
+         sed -i "s|<li><a href=\"#_HEAD\">Release HEAD</a></li>|<li><a href=\"#_$EXISTING_APP_VERSIONNG_APP_VERSION</a></li>|" "$HTML_FILE"
+         
+         # Insert new HEAD entry above the version entry
+         sed -i "/<li><a href=\"#_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION<\/i <li>\"#_HEAD\"Release HEAD</a></li>" "$HTML_FILE"
+         
+         # Update latest app version
+         sed -i "s|<li>App Version - .*</li>|<li>App Version - $APP_VERSION</li>|" "$HTML_FILE"
+         
+         # Update translations
+         sed -i "s|<li>Translations: .*</li>|<li>Translations: $TRANSLATIONS</li>|" "$HTML_FILE"
+         
+      - name: Upload Changelog Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog
+          path: ${{ env.HTML_FILE }}
