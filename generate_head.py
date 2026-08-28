@@ -92,7 +92,8 @@ if stories:
         "\n      </table>"
     )
 
-head_section = "\n\n".join(sections) + "\n\n"
+# Appends break tags at the end to create breathing room before the next release section
+head_section = "\n\n".join(sections) + "\n<br><br>\n\n"
 
 with open("release_head.html", "w", encoding="utf-8") as f:
     f.write(head_section)
