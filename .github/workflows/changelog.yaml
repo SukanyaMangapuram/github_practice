@@ -30,10 +30,55 @@ jobs:
           echo "HTML file found:"
           ls -l "$HTML_FILE"
 
+      - name: Download Translations Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: translations
+          path: ./translations_temp
+        continue-on-error: true
+
+      - name: Unzip Translations Artifact
+        run: |
+          if [ -d "./translations_temp" ]; then
+            mkdir -p translations
+            # Search for zip file inside download directory and unzip
+            ZIP_FILE=$(find ./translations_temp -name "*.zip" | head -n 1)
+            if [ -n "$ZIP_FILE" ]; then
+              echo "Unzipping $ZIP_FILE..."
+              unzip -o "$ZIP_FILE" -d translations/
+            else
+              echo "No zip file found inside translations_temp, copying contents..."
+              cp -r ./translations_temp/* translations/
+            fi
+          else
+            echo "No translations artifact found."
+          fi
+          
+      - name: Extract Translations Version
+        id: fetch_translation
+        run: |
+          # Find all strings.xml inside translations/values* directories
+          XML_FILE=$(find translations -path "*/values*/strings.xml" 2>/dev/null | head -n 1)
+
+          if [ -z "$XML_FILE" ]; then
+            echo "No strings.xml found under translations/values*"
+            TRANSLATION_VERSION="Unknown"
+          else
+            # Extract text inside <string name="text_tool_version">...</string>
+            TRANSLATION_VERSION=$(grep -oP '(?<=<string name="text_tool_version">).*(?=</string>)' "$XML_FILE" | head -n 1)
+          fi
+
+          if [ -z "$TRANSLATION_VERSION" ]; then
+            TRANSLATION_VERSION="Unknown"
+          fi
+
+          echo "Extracted Translation Version: $TRANSLATION_VERSION"
+          echo "translations=$TRANSLATION_VERSION" >> $GITHUB_OUTPUT
+          
       - name: Update App Version
         run: |
           APP_VERSION="dummy1"
-          TRANSLATIONS="dummy2"
+          TRANSLATIONS="${{ steps.fetch_translation.outputs.translations }}"
           CHANGELOG_FILE="CHANGELOG.md"
 
           EXISTING_APP_VERSION=$(grep -oP '(?<=<li>App Version - ).*(?=</li>)' "$HTML_FILE")
