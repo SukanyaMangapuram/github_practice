@@ -38,10 +38,13 @@ for line in release_lines:
         jira_id = match.group(1)
         jira_url = match.group(2)
 
-        desc = re.sub(r'^\*\s*', '', line)
-        desc = re.sub(r'\*\*(.*?)\*\*', r'\1', desc)
-        desc = re.sub(r'\[([A-Z0-9]+-[0-9]+)\]\([^\s\)]+\):?', '', desc)
-        desc = re.sub(r'^(feat|fix|story|bug)\s*(\([^\)]+\))?:\s*', '', desc, flags=re.IGNORECASE)
+        # Cleanup description text
+        desc = line
+        desc = re.sub(r'^\s*[\*\-]\s*', '', desc)  # remove leading bullets/hyphens
+        desc = re.sub(r'\*\*(.*?)\*\*', r'\1', desc)  # remove bold Markdown tags
+        desc = re.sub(r'\[([A-Z0-9]+-[0-9]+)\]\([^\s\)]+\):?', '', desc)  # remove raw Jira link
+        desc = re.sub(r'^(feat|fix|story|bug)\s*\([^\)]*\)\s*:?\s*', '', desc, flags=re.IGNORECASE)  # strip fix(), feat(), etc.
+        desc = re.sub(r'^\s*[\*\-]\s*', '', desc)  # clean up remaining hyphens/spaces
         desc = desc.strip()
 
         row = (
