@@ -26,17 +26,6 @@
 
 # 2026 Releases
 
-## Release 26.31.00
-
-> 3 change(s)
-
-- **fix([C1INF-130172](https://devstack.vwgroup.com/jira/browse/C1INF-130172)): Text translation for CL48_13**
-- **fix([C1INF-130063](https://devstack.vwgroup.com/jira/browse/C1INF-130063)): Statistics screen chart background color issue**
-- **fix([C1INF-129918](https://devstack.vwgroup.com/jira/browse/C1INF-129918)): OLB Tag Issue Fix**
-
----
-
-
 ## Release 26.30.00
 
 > 16 change(s)
