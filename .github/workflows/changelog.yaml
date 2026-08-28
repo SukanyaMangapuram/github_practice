@@ -1,33 +1,4 @@
-name: Update Changelog
-
-on:
-  workflow_dispatch:
-
-jobs:
-  fetch-changelog:
-    name: Update Changelog
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set HTML File Path
-        run: |
-          HTML_FILE="changelog.html"
-          echo "HTML_FILE=$HTML_FILE" >> $GITHUB_ENV
-
-      - name: Verify HTML File Exists
-        run: |
-          if [ ! -f "$HTML_FILE" ]; then
-            echo "HTML file not found: $HTML_FILE"
-            exit 1
-          fi
-
-          echo "HTML file found:"
-          ls -l "$HTML_FILE"
-
-      - name: Update App Version
+- name: Update App Version
         run: |
           APP_VERSION="dummy1"
           TRANSLATIONS="dummy2"
@@ -56,71 +27,72 @@ jobs:
           changelog_file = "$CHANGELOG_FILE"
 
           with open(changelog_file, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+              lines = f.readlines()
 
           release_lines = []
           found = False
 
           for line in lines:
-            if line.startswith("### Release "):
-              if found:
-                break
-              found = True
-              continue
+              if line.startswith("### Release "):
+                  if found:
+                      break
+                  found = True
+                  continue
 
-            if found:
-              release_lines.append(line.strip())
+              if found:
+                  release_lines.append(line.strip())
 
           features = []
           bugs = []
           stories = []
 
           pattern = re.compile(
-            r'\*\*(feat|fix|story)\(\[([A-Z0-9-]+)\]\(https://devstack\.vwgroup\.com/jira/browse/[A-Z0-9-]+\)\):\s*(.*?)\*\*',
-            re.IGNORECASE
+              r'\*\*(feat|fix|story)\(\[([A-Z0-9-]+)\]\(https://devstack\.vwgroup\.com/jira/browse/[A-Z0-9-]+\)\):\s*(.*?)\*\*',
+              re.IGNORECASE
           )
 
           for line in release_lines:
-            match = pattern.search(line)
-            if not match:
-              continue
+              match = pattern.search(line)
+              if not match:
+                  continue
 
-            change_type = match.group(1).lower()
-            jira = match.group(2)
-            desc = match.group(3)
+              change_type = match.group(1).lower()
+              jira = match.group(2)
+              desc = match.group(3)
 
-            row = f'''
-            <tr>
-            <td><a href="https://devstackcom/jira/browse/{jira}{jira}</a></td>
+              row = f'''<tr>
+            <td><a href="https://devstack.vwgroup.com/jira/browse/{jira}">{jira}</a></td>
             <td>{desc}</td>
-            </tr>
-            '''
+          </tr>'''
 
-            if change_type == "feat":
-              features.append(row)
-            elif change_type == "story":
-              stories.append(row)
-            else:
-              bugs.append(row)
+              if change_type == "feat":
+                  features.append(row)
+              elif change_type == "story":
+                  stories.append(row)
+              else:
+                  bugs.append(row)
 
-          head_section = f"""
-          <h2 id="_HEAD">Release HEAD</h2>
+          sections = ['<h2 id="_HEAD">Release HEAD</h2>']
 
-          <h3>Feature</h3>
+          if features:
+              sections.append(f"""<h3>Feature</h3>
           <table>
-          {''.join(features)}
-          </table>
+          {chr(10).join(features)}
+          </table>""")
 
-          <h3>Bug</h3>
+          if bugs:
+              sections.append(f"""<h3>Bug</h3>
           <table>
-          {''.join(bugs)}
-          </table>
+          {chr(10).join(bugs)}
+          </table>""")
 
-          <h3>Story</h3>
+          if stories:
+              sections.append(f"""<h3>Story</h3>
           <table>
-          {''.join(stories)}
-          </table>
-          """
+          {chr(10).join(stories)}
+          </table>""")
+
+          head_section = "\n\n".join(sections) + "\n"
 
           with open("release_head.html", "w", encoding="utf-8") as f:
               f.write(head_section)
@@ -128,9 +100,3 @@ jobs:
 
           # Insert Release HEAD section before previous release section
           sed -i "/<h2 id=\"_$EXISTING_APP_VERSION\">Release $EXISTING_APP_VERSION<\/h2>/e cat release_head.html" "$HTML_FILE"
-
-      - name: Upload Changelog Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: changelog
-          path: ${{ env.HTML_FILE }}
