@@ -55,11 +55,11 @@ jobs:
           # Update translations
           sed -i "s|<li>Translations: .*</li>|<li>Translations: $TRANSLATIONS</li>|" "$HTML_FILE"
 
-          # Execute Python script to generate tables
+          # Execute Python script
           export CHANGELOG_FILE="$CHANGELOG_FILE"
           python3 generate_head.py
 
-          # Insert generated black tables under Release HEAD
+          # Insert generated tables under Release HEAD
           sed -i "/<h2 id=\"_HEAD\">Release HEAD<\/h2>/r release_head.html" "$HTML_FILE"
 
       - name: Upload Changelog Artifact
