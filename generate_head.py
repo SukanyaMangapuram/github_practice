@@ -3,6 +3,10 @@ import re
 
 changelog_file = os.environ.get("CHANGELOG_FILE", "CHANGELOG.md")
 
+if not os.path.exists(changelog_file):
+    print(f"Error: {changelog_file} not found.")
+    exit(1)
+
 with open(changelog_file, "r", encoding="utf-8") as f:
     lines = f.readlines()
 
@@ -10,7 +14,7 @@ release_lines = []
 found = False
 
 for line in lines:
-    if line.startswith("### Release "):
+    if line.strip().startswith("### Release ") or line.strip().startswith("## Release "):
         if found:
             break
         found = True
@@ -19,49 +23,52 @@ for line in lines:
     if found:
         release_lines.append(line.strip())
 
-features = []
-bugs = []
-stories = []
+features, bugs, stories = [], [], []
 
-pattern = re.compile(
-    r'\*\*(feat|fix|story)\(\[([A-Z0-9-]+)\]\((https://devstack\.vwgroup\.com/jira/browse/[A-Z0-9-]+)\)\):\s*(.*?)\*\*',
-    re.IGNORECASE
+jira_pattern = re.compile(
+    r'\[([A-Z0-9]+-[0-9]+)\]\((https://[^\s\)]+)\)'
 )
 
 for line in release_lines:
-    match = pattern.search(line)
-    if not match:
+    if not line:
         continue
 
-    change_type = match.group(1).lower()
-    jira_id = match.group(2)
-    jira_url = match.group(3)
-    desc = match.group(4)
+    match = jira_pattern.search(line)
+    if match:
+        jira_id = match.group(1)
+        jira_url = match.group(2)
 
-    row = (
-        f'        <tr>\n'
-        f'          <td>\n'
-        f'            <a href="{jira_url}">{jira_id}</a>\n'
-        f'          </td>\n'
-        f'          <td>\n'
-        f'            <a href="{jira_url}">{desc}</a>\n'
-        f'          </td>\n'
-        f'        </tr>'
-    )
+        desc = re.sub(r'^\*\s*', '', line)
+        desc = re.sub(r'\*\*(.*?)\*\*', r'\1', desc)
+        desc = re.sub(r'\[([A-Z0-9]+-[0-9]+)\]\([^\s\)]+\):?', '', desc)
+        desc = re.sub(r'^(feat|fix|story|bug)\s*(\([^\)]+\))?:\s*', '', desc, flags=re.IGNORECASE)
+        desc = desc.strip()
 
-    if change_type == "feat":
-        features.append(row)
-    elif change_type == "story":
-        stories.append(row)
-    else:
-        bugs.append(row)
+        row = (
+            f'        <tr>\n'
+            f'          <td>\n'
+            f'            <a href="{jira_url}">{jira_id}</a>\n'
+            f'          </td>\n'
+            f'          <td>\n'
+            f'            <a href="{jira_url}">{desc}</a>\n'
+            f'          </td>\n'
+            f'        </tr>'
+        )
 
-sections = ['      <h2 id="_HEAD">Release HEAD</h2>']
+        line_lower = line.lower()
+        if "feat" in line_lower:
+            features.append(row)
+        elif "story" in line_lower:
+            stories.append(row)
+        else:
+            bugs.append(row)
+
+sections = []
 
 if features:
     sections.append(
         "      <h3>Feature</h3>\n"
-        "      <table>\n" +
+        "      <table class=\"black-table\">\n" +
         "\n".join(features) +
         "\n      </table>"
     )
@@ -69,7 +76,7 @@ if features:
 if bugs:
     sections.append(
         "      <h3>Bug</h3>\n"
-        "      <table>\n" +
+        "      <table class=\"black-table\">\n" +
         "\n".join(bugs) +
         "\n      </table>"
     )
@@ -77,7 +84,7 @@ if bugs:
 if stories:
     sections.append(
         "      <h3>Story</h3>\n"
-        "      <table>\n" +
+        "      <table class=\"black-table\">\n" +
         "\n".join(stories) +
         "\n      </table>"
     )
