@@ -13,9 +13,11 @@ jobs:
         run: |
           mkdir -p hall_tickets
 
-          for i in {1..100}; do
-            number="HT$(shuf -i 10000000-99999999 -n 1)"
-            echo "Hall Ticket Number: $number" > "hall_tickets/hall_ticket_${i}.txt"
+          for i in {1..10}; do
+            HALLTICKET_NUMBER="HT$(shuf -i 10000000-99999999 -n 1)"
+            FILENAME="PAT_${HALLTICKET_NUMBER}.txt"
+
+            echo "Hall Ticket Number: ${HALLTICKET_NUMBER}" > "hall_tickets/${FILENAME}"
           done
 
       - name: Create ZIP file
