@@ -1,0 +1,29 @@
+name: Generate Hall Tickets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-hall-tickets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create hall ticket files
+        shell: bash
+        run: |
+          mkdir -p hall_tickets
+
+          for i in {1..100}; do
+            number="HT$(shuf -i 10000000-99999999 -n 1)"
+            echo "Hall Ticket Number: $number" > "hall_tickets/hall_ticket_${i}.txt"
+          done
+
+      - name: Create ZIP file
+        run: |
+          zip -r hall_tickets.zip hall_tickets/
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hall-tickets
+          path: hall_tickets.zip
